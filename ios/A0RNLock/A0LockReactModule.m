@@ -105,6 +105,12 @@ RCT_EXPORT_METHOD(show:(NSDictionary *)options callback:(RCTResponseSenderBlock)
     });
 }
 
+RCT_EXPORT_METHOD(showSignUp:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[A0LockReact sharedInstance] showSignUpWithOptions:options callback:callback];
+    });
+}
+
 RCT_EXPORT_METHOD(authenticate:(NSString *)connectionName options:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[A0LockReact sharedInstance] authenticateWithConnectionName:connectionName options:options callback:callback];

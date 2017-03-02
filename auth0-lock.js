@@ -38,6 +38,14 @@ class Auth0Lock {
     LockModule.show(options, callback);
   }
 
+  showSignUp(options, callback) {
+    LockModule.init(this.lockOptions);
+    if (Platform.OS === "ios" && this.nativeIntegrations) {
+      LockModule.nativeIntegrations(this.nativeIntegrations);
+    }
+    LockModule.showSignUp(options, callback);
+  }
+
   authenticate(connectionName, options, callback) {
     if (Platform.OS === "android") {
       callback("Not available in Android", null, null);

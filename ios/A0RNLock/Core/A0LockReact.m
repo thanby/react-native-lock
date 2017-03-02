@@ -151,6 +151,41 @@
     self.shown = YES;
 }
 
+- (void)showSignUpWithOptions:(NSDictionary *)options callback:(A0LockCallback)callback {
+    if (!self.lock) {
+        callback(@[@"Please configure Lock before using it", [NSNull null], [NSNull null]]);
+        return;
+    }
+
+    self.lock.usePKCE = [options[@"pkce"] boolValue];
+
+    A0LockSignUpViewController *controller = [self.lock newSignUpViewController];
+
+    A0AuthenticationBlock authenticationBlock = ^(A0UserProfile *profile, A0Token *token) {
+        if (profile && token) {
+            NSDictionary *profileDict = [profile asDictionary];
+            NSDictionary *tokenDict = [token asDictionary];
+            callback(@[[NSNull null], profileDict, tokenDict]);
+        } else {
+            callback(@[]);
+        }
+        [controller dismissViewControllerAnimated:YES completion:nil];
+    };
+    void(^dismissBlock)() = ^{
+        self.shown =  NO;
+        callback(@[@"Lock was dismissed by the user", [NSNull null], [NSNull null]]);
+    };
+
+    controller.onAuthenticationBlock = authenticationBlock;
+    controller.onUserDismissBlock = dismissBlock;
+
+    UIViewController *currentController = [[[[UIApplication sharedApplication] windows] firstObject] rootViewController];
+
+    [currentController presentViewController:controller animated:YES completion:nil];
+
+    self.shown = YES;
+}
+
 - (void)authenticateWithConnectionName:(NSString *)connectionName options:(NSDictionary *)options callback:(A0LockCallback)callback {
     A0IdentityProviderAuthenticator *authenticator = [self.lock identityProviderAuthenticator];
     void(^success)(A0UserProfile *, A0Token *) = ^(A0UserProfile *profile, A0Token *token) {
